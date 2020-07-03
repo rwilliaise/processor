@@ -25,12 +25,31 @@ function Memory:__newindex()
 end
 
 function Memory.FromFile(fileName, readonly)
-	-- TODO: pls do this!	
+	local File = assert(io.open(fileName, "rb"), "File not found!") -- read binary
+	local OutBytes = {}
+	while true do 
+		local ByteBatch = File:read(16) -- read 16 bytes at a time
+		if not ByteBatch then break end
+		for Byte in string.gfind(ByteBatch, ".") do
+			table.insert(OutBytes, Byte)
+		end
+	end
+	local NewMemory = Memory.new(#OutBytes)
+	for i = 1, #OutBytes do
+		NewMemory:Set(i, OutBytes[i])
+	end
+	if readonly then
+		NewMemory:SetReadOnly()
+	end
+	return NewMemory
 end
 
 function Memory:GetAddress(Address)
 	if Address >= self.Size then error("Address out of range! " .. self.Size) return end
 	return self.Memory[Address] or 0
 end
+
+Memory.Set = Memory.SetAddress
+Memory.Get = Memory.GetAddress
 
 return Memory

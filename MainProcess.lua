@@ -1,5 +1,5 @@
 local Memory = require("memory/Memory")
 
-assert(arg[1], "No ROM filename provided!")
+local file_ROM = arg[1] or "rom.bin"
 
-local ROM = Memory.FromFile(arg[1])
+local ROM = Memory.FromFile(file_ROM, true)

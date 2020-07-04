@@ -1,1 +1,1 @@
-local Operator = {}
+local Operators = {}

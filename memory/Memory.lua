@@ -9,7 +9,7 @@ end
 function Memory:SetAddress(Address, Value)
 	if self.ReadOnly then error("Memory is read only!") return end
 	if Address >= self.Size then error("Address out of range! " .. self.Size) return end 
-	rawset(self.Memory, Address, Value)
+	rawset(self.Memory, Address, bit32.band(Value, 255)) -- 8 bit values only
 end
 
 function Memory:SetReadOnly()
@@ -42,6 +42,10 @@ function Memory.FromFile(fileName, readonly)
 		NewMemory:SetReadOnly()
 	end
 	return NewMemory
+end
+
+function Memory:GetSize()
+	return self.Size
 end
 
 function Memory:GetAddress(Address)

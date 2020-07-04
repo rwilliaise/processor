@@ -1,5 +1,5 @@
 local Parser = {}
-local Operator = require("Operator")
+local Operator = require("opcodes/Operator")
 
 local pc = 0 -- program counter
 

@@ -8,6 +8,7 @@ end
 
 function Memory:SetAddress(Address, Value)
 	if self.ReadOnly then error("Memory is read only!") return end
+	if Address < 0 then error("Address out of range!") return end
 	if Address >= self.Size then error("Address out of range! " .. self.Size) return end 
 	rawset(self.Memory, Address, bit32.band(Value, 255)) -- 8 bit values only
 end
@@ -49,6 +50,7 @@ function Memory:GetSize()
 end
 
 function Memory:GetAddress(Address)
+	if Address < 0 then error("Address out of range!") return end
 	if Address >= self.Size then error("Address out of range! " .. self.Size) return end
 	return self.Memory[Address] or 0
 end

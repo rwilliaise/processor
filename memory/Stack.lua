@@ -1,3 +1,0 @@
-local Stack = {}
-
-return Stack

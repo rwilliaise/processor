@@ -7,19 +7,7 @@ local const INTERRPUT = 0x04
 local const ZERO	  = 0x02
 local const CARRY	  = 0x01
 
---[[
-	For simple instruction creation.
-]]
-local Instruction = {}
-Instruction.__index = Instruction
-
-function Instruction.new(callback, addr)
-	return setmetatable({AddrMode = addr, Callback = callback}, Instruction)
-end
-
-function Instruction:__call(...)
-	self.callback(self.addr())
-end
+local Instruction = require("Instructions")
 
 local Unit = {}
 Unit.__index = Unit
@@ -48,10 +36,13 @@ function Unit.new(Memory)
 		}, Unit)
 end
 
-function Unit:Call(index)
-	local instr = Unit.Instructions[index & 255]
+function Unit:Initialize()
+	Instruction.SetUnit(self)
 end
 
+--[[
+	Set some conditional flagging
+]]
 function Unit:NEGATIVE(x)
 	if x then
 		self.Z = self.Z | NEGATIVE
@@ -116,36 +107,17 @@ function Unit:CARRY(x)
 	end
 end
 
-function Unit:IsNEGATIVE()
-	return (self.Z & NEGATIVE) == NEGATIVE
-end
+function Unit:IsNEGATIVE() return (self.Z & NEGATIVE) == NEGATIVE end
+function Unit:IsOVERFLOW() return (self.Z & OVERFLOW) == OVERFLOW end
+function Unit:IsCONSTANT() return (self.Z & CONSTANT) == CONSTANT end
+function Unit:IsBREAK() return (self.Z & BREAK) == BREAK end
+function Unit:IsDECIMAL() return (self.Z & DECIMAL) == DECIMAL end
+function Unit:IsINTERRUPT() return (self.Z & INTERRPUT) == INTERRPUT end
+function Unit:IsZERO() return (self.Z & ZERO) == ZERO end
+function Unit:IsCARRY() return (self.Z & CARRY) == CARRY end
 
-function Unit:IsOVERFLOW()
-	return (self.Z & OVERFLOW) == OVERFLOW
-end
-
-function Unit:IsCONSTANT()
-	return (self.Z & CONSTANT) == CONSTANT
-end
-
-function Unit:IsBREAK()
-	return (self.Z & BREAK) == BREAK
-end
-
-function Unit:IsDECIMAL()
-	return (self.Z & DECIMAL) == DECIMAL
-end
-
-function Unit:IsINTERRUPT()
-	return (self.Z & INTERRPUT) == INTERRPUT
-end
-
-function Unit:IsZERO()
-	return (self.Z & ZERO) == ZERO
-end
-
-function Unit:IsCARRY()
-	return (self.Z & CARRY) == CARRY
+function Unit:Call(index)
+	local instr = Unit.Instructions[index & 255]
 end
 
 function Unit:Cycle()
